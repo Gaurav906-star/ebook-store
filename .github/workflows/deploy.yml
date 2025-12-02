@@ -4,7 +4,7 @@ on:
     branch:
       - main
 
-jobsgit:
+jobs:
   ebook-job-pipeline:
     runs-on: ubuntu-latest
 
