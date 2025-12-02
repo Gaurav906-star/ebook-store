@@ -56,7 +56,7 @@ jobs:
         # upload build to s3 bucket
       - name: Upload to s3 bucket
         run: |
-          aws s3 cp ebook-app.zip s3://ebook-build-bucket-01dec/ebook-app.zip --region us-east-01
+          aws s3 cp ebook-app.zip s3://ebook-build-bucket-01dec/ebook-app.zip --region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRETE_ACCESS_KEY_ID }}
