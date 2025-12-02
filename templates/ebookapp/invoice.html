@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        font-size: 14px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #0984e3;
+      }
+
+      .info-box {
+        margin-bottom: 20px;
+      }
+
+      .info-box strong {
+        display: inline-block;
+        width: 120px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid #333;
+      }
+
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background: #0984e3;
+        color: white;
+      }
+
+      .total {
+        text-align: right;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Invoice #{{ order.id }}</h1>
+
+    <div class="info-box">
+      <p><strong>Customer:</strong> {{ order.user.username }}</p>
+      <p><strong>Email:</strong> {{ order.user.email }}</p>
+      <p>
+        <strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}
+      </p>
+      <p><strong>Status:</strong> {{ order.status|title }}</p>
+    </div>
+
+    <div class="info-box">
+      <p><strong>Shipping Address:</strong></p>
+      <p>{{ order.address.full_name }}</p>
+      <p>{{ order.address.address_line1 }}</p>
+      {% if order.address.address_line2 %}
+      <p>{{ order.address.address_line2 }}</p>
+      {% endif %}
+      <p>
+        {{ order.address.city }}, {{ order.address.state }} - {{
+        order.address.pincode }}
+      </p>
+      <p>{{ order.address.country }}</p>
+      <p>Phone: {{ order.address.phone }}</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Book</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>${{ item.price|floatformat:2 }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            ${{
+            item.price|floatformat:2|floatformat:2|add:item.quantity|floatformat:2}}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p class="total">Total: ${{ order.total_amount|floatformat:2 }}</p>
+  </body>
+</html>

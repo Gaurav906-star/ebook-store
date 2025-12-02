@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit Address</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f1f2f6;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 25px;
+        color: #2d3436;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #2d3436;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #dcdde1;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      .btn-submit {
+        background: #00b894;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: none;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 10px;
+      }
+
+      .btn-submit:hover {
+        background: #008f72;
+      }
+
+      .back-link {
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        color: #636e72;
+      }
+
+      .back-link:hover {
+        color: #2d3436;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Edit Address</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label>Full Name</label>
+          {{ form.full_name }}
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          {{ form.phone }}
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 1</label>
+          {{ form.address_line1 }}
+        </div>
+
+        <div class="form-group">
+          <label>Address Line 2 (optional)</label>
+          {{ form.address_line2 }}
+        </div>
+
+        <div class="form-group">
+          <label>City</label>
+          {{ form.city }}
+        </div>
+
+        <div class="form-group">
+          <label>State</label>
+          {{ form.state }}
+        </div>
+
+        <div class="form-group">
+          <label>Pincode</label>
+          {{ form.pincode }}
+        </div>
+
+        <div class="form-group">
+          <label>Country</label>
+          {{ form.country }}
+        </div>
+
+        <button type="submit" class="btn-submit">Update Address</button>
+
+        <a href="{% url 'address_list' %}" class="back-link">
+          ← Back to Address List
+        </a>
+      </form>
+    </div>
+  </body>
+</html>

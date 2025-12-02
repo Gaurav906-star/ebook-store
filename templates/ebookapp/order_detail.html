@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Order Details</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f1f2f6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        text-align: center;
+        color: #2d3436;
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #dfe6e9;
+      }
+
+      .order-id {
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .order-date,
+      .order-status {
+        color: #636e72;
+        margin-top: 8px;
+      }
+
+      .status-badge {
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 14px;
+        color: white;
+        font-weight: bold;
+      }
+
+      .status-pending {
+        background: #fdcb6e;
+      }
+
+      .status-processing {
+        background: #0984e3;
+      }
+
+      .status-shipped {
+        background: #6c5ce7;
+      }
+
+      .status-delivered {
+        background: #00b894;
+      }
+
+      .section-title {
+        margin-top: 30px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #2d3436;
+        border-left: 5px solid #0984e3;
+        padding-left: 10px;
+      }
+
+      /* Address box */
+      .address-box {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f7f9fa;
+        border-radius: 10px;
+        border: 1px solid #dfe6e9;
+      }
+
+      /* Items table */
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      table th,
+      table td {
+        padding: 12px;
+        text-align: left;
+      }
+
+      table th {
+        background: #0984e3;
+        color: white;
+      }
+
+      table tr:nth-child(even) {
+        background: #f1f2f6;
+      }
+
+      table tr:nth-child(odd) {
+        background: #ffffff;
+      }
+
+      .total-box {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #0984e3;
+      }
+
+      .back-btn {
+        display: inline-block;
+        margin-top: 25px;
+        padding: 12px 20px;
+        background: #636e72;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: 0.2s;
+      }
+
+      .back-btn:hover {
+        background: #2d3436;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Order Details</h2>
+
+      <!-- Order Header -->
+      <div class="order-header">
+        <div>
+          <div class="order-id">Order #{{ order.id }}</div>
+          <div class="order-date">
+            Placed on: {{ order.created_at|date:"M d, Y H:i" }}
+          </div>
+        </div>
+
+        <div>
+          <span
+            class="status-badge {% if order.status == 'PENDING' %}status-pending {% elif order.status == 'PROCESSING' %}status-processing {% elif order.status == 'SHIPPED' %}status-shipped {% elif order.status == 'DELIVERED' %}status-delivered {% endif %}"
+          >
+            {{ order.status|title }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="section-title">Shipping Address</div>
+      <div class="address-box">
+        <strong>{{ order.address.full_name }}</strong><br />
+        {{ order.address.address_line1 }}<br />
+        {% if order.address.address_line2 %} {{ order.address.address_line2
+        }}<br />
+        {% endif %} {{ order.address.city }}, {{ order.address.state }} - {{
+        order.address.pincode }}<br />
+        {{ order.address.country }}<br />
+        Phone: {{ order.address.phone }}
+      </div>
+
+      <!-- Items List -->
+      <div class="section-title">Items</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Book</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td>{{ item.book.title }}</td>
+            <td>${{ item.price|floatformat:2 }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>
+              ${{
+              item.quantity|floatformat:0|add:"0"|floatformat:0|floatformat:0|add:item.price|floatformat:2
+              }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- Total -->
+      <div class="total-box">
+        Total: ${{ order.total_amount|floatformat:2 }}
+      </div>
+
+      <a href="{% url 'my_orders' %}" class="back-btn">← Back to My Orders</a>
+    </div>
+  </body>
+</html>

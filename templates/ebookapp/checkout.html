@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Checkout</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        background: #f1f2f6;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 25px;
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #2d3436;
+      }
+
+      .address-card {
+        background: #f8f9fa;
+        border: 2px solid transparent;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .address-card:hover {
+        border-color: #0984e3;
+      }
+
+      input[type="radio"] {
+        transform: scale(1.3);
+        margin-right: 12px;
+      }
+
+      .summary {
+        background: #dfe6e9;
+        padding: 18px;
+        border-radius: 12px;
+        margin-top: 25px;
+      }
+
+      .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: #0984e3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        margin-top: 25px;
+        transition: 0.2s;
+      }
+
+      .btn-submit:hover {
+        background: #075d9c;
+      }
+
+      .error {
+        background: #ff7675;
+        color: white;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Select Delivery Address</h2>
+
+      {% if error %}
+      <div class="error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %} {% for a in addresses %}
+        <label>
+          <div class="address-card">
+            <input type="radio" name="selected_address" value="{{ a.id }}" />
+            <strong>{{ a.full_name }}</strong><br />
+            {{ a.address_line1 }}<br />
+            {% if a.address_line2 %}{{ a.address_line2 }}<br />{% endif %} 
+            {{a.city }}, {{ a.state }} - {{ a.pincode }}<br />
+            {{ a.country }}<br />
+            Phone: {{ a.phone }}
+          </div>
+        </label>
+        {% endfor %}
+
+        <div class="summary">
+          <h3>Order Summary</h3>
+          {% for item in cart_items %}
+          <p>{{ item.book.title }} × {{ item.quantity }}</p>
+          {% endfor %}
+          <hr />
+          <h3>Total: ${{ total|floatformat:2 }}</h3>
+        </div>
+
+        <button type="submit" class="btn-submit">Place Order</button>
+      </form>
+    </div>
+  </body>
+</html>

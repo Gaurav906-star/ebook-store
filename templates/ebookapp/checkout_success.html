@@ -1,0 +1,96 @@
+<div class="container">
+  <div class="success-card">
+    <h2>Thank You for Your Purchase, {{ order.user.username }}!</h2>
+    <p class="message">Your order has been successfully placed.</p>
+
+    <div class="order-details">
+      <p><strong>Order ID:</strong> {{ order.id }}</p>
+      <p>
+        <strong>Total Amount:</strong> €{{ order.total_amount|floatformat:2 }}
+      </p>
+    </div>
+
+    <h3>Purchased Items:</h3>
+    <ul class="items-list">
+      {% for item in order.items.all %}
+      <li>
+        {{ item.book.title }} x {{ item.quantity }} —
+        €{{item.price|floatformat:2 }}
+      </li>
+      {% endfor %}
+    </ul>
+
+    <a href="/ebook/home" class="continue-btn">Continue Shopping</a>
+  </div>
+</div>
+
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+  }
+
+  .success-card {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .success-card h2 {
+    color: #00b894;
+    margin-bottom: 15px;
+  }
+
+  .success-card .message {
+    font-size: 18px;
+    color: #2f3640;
+    margin-bottom: 20px;
+  }
+
+  .order-details p {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+
+  .items-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+
+  .items-list li {
+    padding: 10px;
+    border-bottom: 1px solid #dcdde1;
+    font-size: 16px;
+  }
+
+  .items-list li:last-child {
+    border-bottom: none;
+  }
+
+  .continue-btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 25px;
+    background-color: #0984e3;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .continue-btn:hover {
+    background-color: #74b9ff;
+  }
+</style>

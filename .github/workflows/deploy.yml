@@ -1,0 +1,76 @@
+name: CICD pipeline for ebook app
+on:
+  push:
+    branch:
+      - main
+
+job:
+  ebook-job-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout the code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+        # python setup
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.14"
+
+        # install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirement.txt
+
+        # run test
+      - name: Run test
+        run: |
+          python -m pytest || true
+
+        # run pylint
+      - name: Run pylint
+        run: |
+          pip install pylint
+          pylint $(git ls-files '*.py') || true
+
+        # run sonarqube
+      - name: Run sonarqube
+        uses: sonarsource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+        # generate build
+      - name: Genetare zip files
+        run: |
+          zip -r ebook-app.zip . -x "*.git*" "venv"
+
+        # upload build to s3 bucket
+      - name: Upload to s3 bucket
+        run: |
+          aws s3 cp ebook-zip s3://ebook-build-bucket-01dec/ebook-app.zip --region us-east-01
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRETE_ACCESS_KEY_ID: ${{ secrets.AWS_SECRETE_ACCESS_KEY_ID }}
+          AWS_DEFAULT_REGION: us-east-1
+
+        # deploy to Elastic Bean Stalk
+      - name: Deploy to EBS
+        run: |
+          aws elasticbeanstalk create-application-version \
+           --application-name "ebook" \
+           --version-label "deploy-${{ github.run_number }}" \
+           --source-bundle S3Bucket="ebook-build-bucket-01dec",S3Key="ebook-app.zip" \
+           --region us-east-1
+
+          aws elasticbeanstalk update-environment \
+           --environment-name "Ebook-env" \
+           --version-label "deploy-${{ github.run_number }}" \
+           --region us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRETE_ACCESS_KEY_ID: ${{ secrets.AWS_SECRETE_ACCESS_KEY_ID }}
+          AWS_DEFAULT_REGION: us-east-1

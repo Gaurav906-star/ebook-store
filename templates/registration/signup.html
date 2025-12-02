@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Signup | Ebook Store</title>
+    <style>
+      body {
+        background: #f5f6fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        width: 420px;
+        margin: 70px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2d3436;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 16px;
+        border: 1px solid #dcdde1;
+        border-radius: 8px;
+        font-size: 15px;
+      }
+
+      input:focus {
+        border-color: #0984e3;
+        outline: none;
+        box-shadow: 0 0 4px #74b9ff;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: #0984e3;
+        color: white;
+        border: none;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .btn:hover {
+        background: #74b9ff;
+      }
+
+      .link {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .link a {
+        text-decoration: none;
+        color: #0984e3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Create Account</h2>
+
+      <form method="POST">
+        {% csrf_token %} {{ form.as_p }}
+
+        <button class="btn" type="submit">Sign Up</button>
+        {% if form.errors %}
+        <ul>
+          {% for field in form %} {% for error in field.errors %}
+          <li>{{ error }}</li>
+          {% endfor %} {% endfor %} {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </form>
+
+      <div class="link">
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login | Ebook Store</title>
+    <style>
+      body {
+        background: #dfe6e9;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        width: 400px;
+        margin: 80px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2d3436;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #b2bec3;
+        border-radius: 8px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: #0984e3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .btn:hover {
+        background: #74b9ff;
+      }
+
+      .link {
+        margin-top: 15px;
+        text-align: center;
+      }
+
+      .link a {
+        color: #0984e3;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Login</h2>
+
+      <form method="POST">
+        {% csrf_token %} {{ form.as_p }}
+
+        <button class="btn" type="submit">Login</button>
+      </form>
+
+      <div class="link">
+        Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
+      </div>
+    </div>
+  </body>
+</html>
