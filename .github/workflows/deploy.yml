@@ -19,28 +19,7 @@ jobs:
         with:
           python-version: "3.14"
 
-      - name: Install jq
-        run: sudo apt-get install jq -y
-
-      - name: Configure Base AWS Credentials
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
-
-      - name: Assume LabRole
-        id: assume_role
-        run: |
-          ASSUME_OUTPUT=$(aws sts assume-role \
-            --role-arn arn:aws:iam::381492129371:role/LabRole \
-            --role-session-name github-session)
-
-          echo "AWS_ACCESS_KEY_ID=$(echo $ASSUME_OUTPUT | jq -r '.Credentials.AccessKeyId')" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=$(echo $ASSUME_OUTPUT | jq -r '.Credentials.SecretAccessKey')" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=$(echo $ASSUME_OUTPUT | jq -r '.Credentials.SessionToken')" >> $GITHUB_ENV
-
         # install dependencies
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -78,11 +57,11 @@ jobs:
       - name: Upload to s3 bucket
         run: |
           aws s3 cp ebook-app.zip s3://ebook-build-bucket-01dec/ebook-app.zip --region us-east-1
-        # env:
-        #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #   AWS_DEFAULT_REGION: us-east-1
-        #   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
+          AWS_DEFAULT_REGION: us-east-1
 
         # deploy to Elastic Bean Stalk
 
@@ -100,5 +79,6 @@ jobs:
            --region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRETE_ACCESS_KEY_ID: ${{ secrets.AWS_SECRETE_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
           AWS_DEFAULT_REGION: us-east-1
