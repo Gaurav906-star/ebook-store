@@ -1,5 +1,5 @@
 from django import forms
-from ..models import Address
+from ebookapp.models import Address
 
 class AddressForm(forms.ModelForm):
     class Meta:

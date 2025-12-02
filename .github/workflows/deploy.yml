@@ -35,7 +35,7 @@ jobs:
       - name: Run pylint
         run: |
           pip install pylint
-          pylint $(git ls-files '*.py') || true
+          pylint --fail-under=7.0 $(git ls-files '*.py') || true
 
         # run sonarqube
       - name: Run sonarqube

@@ -1,27 +1,25 @@
-from django.shortcuts import render,redirect
-from .forms.CustomLoginForm import CustomLoginForm
-from .forms.SignUpForm import SignUpForm
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from .models import Category,Book,CartItem,Order,OrderItem,Address
-from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Book, CartItem
-from .forms.AddressForm import AddressForm
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from .forms.CustomLoginForm import CustomLoginForm
+from .forms.SignUpForm import SignUpForm
+from .models import Category,Book,CartItem,Order,OrderItem,Address
+from .forms.AddressForm import AddressForm
 
 
 def login_view(request):
   if request.method == 'POST':
-    form = CustomLoginForm(request, data = request.data)
+    form = CustomLoginForm(request, data = request.POST)
     if form.is_valid():
        username = form.cleaned_data.get('username')
        password = form.cleaned_data.get('password')
        user = authenticate(request, username= username,password = password)
 
        if user is not None:
-         login(user)
+         login(request, user)
          return redirect('home')
   else:
     form = CustomLoginForm()
@@ -51,8 +49,8 @@ def logout_view(request):
 
 
 def home_view(request):
-  categories = Category.objects.all()[:6]
-  latest_books = Book.objects.order_by('-created_at')[:6]
+  categories = Category.objects.all()[:6]    # pylint: disable=no-member
+  latest_books = Book.objects.order_by('-created_at')[:6]   # pylint: disable=no-member
 
   return render(request, "ebookapp/home.html", {
       "categories": categories,
@@ -62,7 +60,7 @@ def home_view(request):
 
 def cart_count(request):
     if request.user.is_authenticated:
-        count = CartItem.objects.filter(user=request.user).count()
+        count = CartItem.objects.filter(user=request.user).count()  # pylint: disable=no-member
     else:
         count = 0
     return {"cart_count": count}
@@ -74,7 +72,7 @@ def add_to_cart(request, book_id):
     quantity = int(request.POST.get("quantity", 1))
 
     # Check if item already exists in cart
-    cart_item, created = CartItem.objects.get_or_create(
+    cart_item, created = CartItem.objects.get_or_create(    # pylint: disable=no-member
         user=request.user,
         book=book,
         defaults={"quantity": quantity}
@@ -92,7 +90,7 @@ def cart_view(request):
     """
     Display cart items and total.
     """
-    cart_items = CartItem.objects.filter(user=request.user)
+    cart_items = CartItem.objects.filter(user=request.user)   # pylint: disable=no-member
     total_price = sum(item.book.price * item.quantity for item in cart_items)
 
     return render(request, "ebookapp/cart.html", {"cart_items": cart_items, "total_price": total_price})
@@ -124,7 +122,7 @@ def remove_cart_item(request, item_id):
 
 @login_required
 def checkout_success_view(request, order_id):
-    order = Order.objects.get(id=order_id, user=request.user)
+    order = Order.objects.get(id=order_id, user=request.user)  # pylint: disable=no-member
     return render(request, "ebookapp/checkout_success.html", {"order": order})
 
 
@@ -132,8 +130,8 @@ def checkout_success_view(request, order_id):
 
 @login_required
 def checkout_view(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    addresses = Address.objects.filter(user=request.user)
+    cart_items = CartItem.objects.filter(user=request.user) # pylint: disable=no-membe
+    addresses = Address.objects.filter(user=request.user) # pylint: disable=no-membe
 
     if not cart_items.exists():
         return redirect("cart")
@@ -154,16 +152,16 @@ def checkout_view(request):
                 "total": total,
             })
 
-        selected_address = Address.objects.get(id=address_id, user=request.user)
+        selected_address = Address.objects.get(id=address_id, user=request.user) # pylint: disable=no-membe
 
-        order = Order.objects.create(
+        order = Order.objects.create( # pylint: disable=no-membe
             user=request.user,
             total_amount=total,
             address=selected_address
         )
 
         for item in cart_items:
-            OrderItem.objects.create(
+            OrderItem.objects.create( # pylint: disable=no-membe
                 order=order,
                 book=item.book,
                 quantity=item.quantity,
@@ -183,7 +181,7 @@ def checkout_view(request):
 
 @login_required
 def my_orders_view(request):
-    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+    orders = Order.objects.filter(user=request.user).order_by("-created_at") # pylint: disable=no-membe
     return render(request, "ebookapp/myorder.html", {"orders": orders})
 
 

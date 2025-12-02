@@ -20,5 +20,6 @@ from ebookapp.views import home_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ebook/',include('ebookapp.urls'))
+    path('ebook/',include('ebookapp.urls')),
+    path('', home_view, name='homepage'),
 ]

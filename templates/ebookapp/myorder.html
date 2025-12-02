@@ -1,193 +1,64 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>My Orders</title>
+{% extends "ebookapp/base.html" %}
 
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #f1f2f6;
-        padding: 20px;
-      }
+{% block title %}My Orders | Ebook Store{% endblock %}
 
-      .container {
-        max-width: 900px;
-        margin: auto;
-      }
+{% block content %}
 
-      h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #2d3436;
-      }
+<div class="container orders-container">
+  <h2>My Orders</h2>
 
-      .order-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-      }
+  {% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
 
-      .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-      }
-
-      .order-id {
-        font-weight: bold;
-        color: #2d3436;
-      }
-
-      .order-date {
-        font-size: 14px;
-        color: #636e72;
-      }
-
-      .status-badge {
-        padding: 6px 14px;
-        border-radius: 30px;
-        font-size: 14px;
-        color: white;
-        font-weight: bold;
-      }
-
-      .status-pending {
-        background: #fdcb6e;
-      }
-
-      .status-completed {
-        background: #00b894;
-      }
-
-      .status-cancelled {
-        background: #d63031;
-      }
-
-      .order-items {
-        margin-top: 10px;
-      }
-
-      .item-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px solid #ecf0f1;
-      }
-
-      .item-row:last-child {
-        border-bottom: none;
-      }
-
-      .item-title {
-        font-weight: bold;
-        color: #2d3436;
-      }
-
-      .item-qty {
-        color: #636e72;
-      }
-
-      .total-amount {
-        text-align: right;
-        margin-top: 15px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #0984e3;
-      }
-
-      .btn-details {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 10px 20px;
-        background: #0984e3;
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: 0.2s;
-      }
-
-      .btn-details:hover {
-        background: #075d9c;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <h2>My Orders</h2>
-
-      {% if orders %} {% for order in orders %}
-      <div class="order-card">
-        <!-- Order Header -->
-        <div class="order-header">
-          <div>
-            <div class="order-id">Order #{{ order.id }}</div>
-            <div class="order-date">
-              {{ order.created_at|date:"M d, Y H:i" }}
-            </div>
-          </div>
-
-          <div>
-            <span
-              class="status-badge {% if order.status == 'pending' %}status-pending {% elif order.status == 'completed' %}status-completed {% elif order.status == 'cancelled' %}status-cancelled {% endif %}"
-            >
-              {{ order.status|title }}
-            </span>
-          </div>
+      <!-- Header -->
+      <div class="order-header">
+        <div>
+          <div class="order-id">Order #{{ order.id }}</div>
+          <div class="order-date">{{ order.created_at|date:"M d, Y H:i" }}</div>
         </div>
 
-        <!-- Order Items -->
-        <div class="order-items">
-          {% for item in order.items.all %}
-          <div class="item-row">
-            <div class="item-title">{{ item.book.title }}</div>
-            <div class="item-qty">Qty: {{ item.quantity }}</div>
-            <div class="item-price">${{ item.price|floatformat:2 }}</div>
-          </div>
-          {% endfor %}
+        <div>
+          <span class="status-badge 
+            {% if order.status == 'pending' %}status-pending
+            {% elif order.status == 'completed' %}status-completed
+            {% elif order.status == 'cancelled' %}status-cancelled
+            {% endif %}
+          ">
+            {{ order.status|title }}
+          </span>
         </div>
-
-        <!-- Total Price -->
-        <div class="total-amount">
-          Total: ${{ order.total_amount|floatformat:2 }}
-        </div>
-
-        <a href="{% url 'order_detail' order.id %}" class="btn-details"
-          >View Details</a
-        >
-
-        <a
-          href="{% url 'download_invoice' order.id %}"
-          style="
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: #00b894;
-            color: white;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: 0.3s;
-            margin-top: 10px;
-            font-size: 14px;
-          "
-        >
-          📄 Download Invoice PDF
-        </a>
       </div>
 
-      {% endfor %} {% else %}
+      <!-- Items list -->
+      <div class="order-items">
+        {% for item in order.items.all %}
+        <div class="item-row">
+          <div class="item-title">{{ item.book.title }}</div>
+          <div class="item-qty">Qty: {{ item.quantity }}</div>
+          <div class="item-price">€{{ item.price|floatformat:2 }}</div>
+        </div>
+        {% endfor %}
+      </div>
 
-      <p style="text-align: center; color: #636e72; margin-top: 40px">
-        You haven't placed any orders yet.
-      </p>
+      <!-- Total -->
+      <div class="total-amount">
+        Total: €{{ order.total_amount|floatformat:2 }}
+      </div>
 
-      {% endif %}
+      <!-- Buttons -->
+      <a href="{% url 'order_detail' order.id %}" class="btn-details">View Details</a>
+
+      <a href="{% url 'download_invoice' order.id %}" class="btn-invoice">
+        📄 Download Invoice PDF
+      </a>
+
     </div>
-  </body>
-</html>
+    {% endfor %}
+
+  {% else %}
+  <p class="no-orders-msg">You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

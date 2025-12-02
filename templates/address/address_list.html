@@ -116,6 +116,27 @@
           </a>
         </div>
       </div>
+      <a
+        href="{% url 'home' %}"
+        style="
+          display: inline-flex;
+          align-items: center;
+          background: #0066ff;
+          color: white;
+          padding: 8px 18px;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 16px;
+          transition: all 0.2s ease-in-out;
+          box-shadow: 0px 4px 10px rgba(0, 102, 255, 0.2);
+        "
+        onmouseover="this.style.background='#004dcc'; this.style.boxShadow='0px 6px 14px rgba(0,80,220,0.35)'; this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.background='#0066ff'; this.style.boxShadow='0px 4px 10px rgba(0,102,255,0.2)'; this.style.transform='translateY(0)'"
+      >
+        <span style="margin-right: 6px; font-size: 18px"></span> Home
+      </a>
+
       {% endfor %} {% else %}
       <p>No addresses saved yet.</p>
       {% endif %}

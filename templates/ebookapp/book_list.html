@@ -1,127 +1,47 @@
+{% extends "ebookapp/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Books | Ebook Store</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #f1f2f6;
-        padding: 20px;
-      }
 
-      .container {
-        max-width: 1200px;
-        margin: auto;
-      }
+{% block title %}Books | Ebook Store{% endblock %}
 
-      h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #2d3436;
-      }
+{% block content %}
 
-      .books-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 20px;
-      }
+<div class="container">
+  <h2>Available Books</h2>
 
-      .book-card {
-        background: white;
-        border-radius: 12px;
-        padding: 15px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .book-card img {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 10px;
-      }
-
-      .book-title {
-        font-weight: bold;
-        font-size: 16px;
-        color: #2d3436;
-        margin-bottom: 5px;
-      }
-
-      .book-author {
-        font-size: 14px;
-        color: #636e72;
-        margin-bottom: 8px;
-      }
-
-      .book-price {
-        font-size: 16px;
-        color: #0984e3;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-
-      .book-stock {
-        font-size: 12px;
-        color: #d63031;
-        margin-bottom: 10px;
-      }
-
-      .btn-add-cart {
-        display: inline-block;
-        padding: 8px 12px;
-        background: #00b894;
-        color: white;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        text-align: center;
-        transition: 0.3s;
-      }
-
-      .btn-add-cart:hover {
-        background: #019874;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Available Books</h2>
-
-      {% if books %}
-      <div class="books-grid">
-        {% for book in books %}
-        <div class="book-card">
-          {% if book.cover_image %}
-          <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" />
-          {% else %}
-          <img src="{% static 'default_book_cover.png' %}" alt="No Image" />
-          {% endif %}
-
-          <div class="book-title">{{ book.title }}</div>
-          <div class="book-author">By {{ book.author }}</div>
-          <div class="book-price">${{ book.price|floatformat:2 }}</div>
-          {% if book.stock > 0 %}
-          <div class="book-stock">In Stock: {{ book.stock }}</div>
-          <a href="{% url 'add_to_cart' book.id %}" class="btn-add-cart"
-            >Add to Cart</a
-          >
-          {% else %}
-          <div class="book-stock">Out of Stock</div>
-          {% endif %}
-        </div>
-        {% endfor %}
-      </div>
+  {% if books %}
+  <div class="books-grid">
+    {% for book in books %}
+    <div class="book-card">
+      
+      {% if book.cover_image %}
+      <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" />
       {% else %}
-      <p style="text-align: center; color: #636e72">
-        No books available at the moment.
-      </p>
+      <img src="{% static 'default_book_cover.png' %}" alt="No Image" />
+      {% endif %}
+
+      <div class="book-title">{{ book.title }}</div>
+      <div class="book-author">By {{ book.author }}</div>
+      <div class="book-price">${{ book.price|floatformat:2 }}</div>
+
+      {% if book.stock > 0 %}
+      <div class="book-stock">In Stock: {{ book.stock }}</div>
+
+      <a href="{% url 'add_to_cart' book.id %}" class="btn-add-cart">
+        Add to Cart
+      </a>
+
+      {% else %}
+      <div class="book-stock">Out of Stock</div>
       {% endif %}
     </div>
-  </body>
-</html>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <p style="text-align: center; color: #636e72">
+    No books available at the moment.
+  </p>
+  {% endif %}
+</div>
+
+{% endblock %}

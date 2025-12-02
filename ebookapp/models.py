@@ -10,7 +10,7 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
     
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Book(models.Model):
@@ -41,10 +41,10 @@ class CartItem(models.Model):
         unique_together = ["user","book"]
     
     def total_price(self):
-     return self.book.price * self.quantity
+     return self.book.price * self.quantity  # pylint: disable=no-member
     
     def __str__(self):
-        return f"{self.book.title} x {self.quantity}"
+        return f"{self.book.title} x {self.quantity}" # pylint: disable=no-member
     
 
 
@@ -64,7 +64,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PENDING")
 
     def __str__(self):
-        return f"Order #{self.id} by {self.user.username}"
+        return f"Order #{self.id} by {self.user.username}"  # pylint: disable=no-member
 
     
 
@@ -75,7 +75,7 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     def __str__(self):
-        return f"{self.book.title} x {self.quantity}"
+        return f"{self.book.title} x {self.quantity}" # pylint: disable=no-member
     
 
 class Address(models.Model):
