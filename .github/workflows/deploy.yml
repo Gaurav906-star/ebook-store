@@ -68,7 +68,7 @@ jobs:
       - name: Deploy to EBS
         run: |
           aws elasticbeanstalk create-application-version \
-           --application-name "ebook" \
+           --application-name "ebook-store" \
            --version-label "deploy-${{ github.run_number }}" \
            --source-bundle S3Bucket="ebook-build-bucket-01dec",S3Key="ebook-app.zip" \
            --region us-east-1
