@@ -31,10 +31,10 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 
-# Application definition
+# Application  definition
 
 INSTALLED_APPS = [
-    'ebookapp',
+    'ebookapp'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,6 +132,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -148,5 +149,4 @@ STATICFILES_DIRS = [
 #     'CacheControl': 'max-age=86400',
 # }
 
-
-MEDIA_URL = MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
+# MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/"
