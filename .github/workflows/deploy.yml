@@ -1,44 +1,62 @@
 name: CICD pipeline for ebook app
+
 on:
   push:
-    branch:
+    branches:
       - main
 
 jobs:
-  ebook-job-pipeline:
+  checkout:
     runs-on: ubuntu-latest
-
     steps:
-      # checkout the code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-        # python setup
+  setup-python:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
+      - uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.14"
+          python-version: "3.12"
 
-        # install dependencies
+  install-dependencies:
+    runs-on: ubuntu-latest
+    needs: setup-python
+    steps:
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          sudo apt-get install -y libcairo2 libcairo2-dev libpango1.0-dev 
+          sudo apt-get install -y libcairo2 libcairo2-dev libpango1.0-dev
           pip install -r requirements.txt
 
-        # run test
-      - name: Run test
-        run: |
-          python -m pytest || true
+  run-tests:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: python -m pytest || true
 
-        # run pylint
+  lint:
+    runs-on: ubuntu-latest
+    needs: run-tests
+    steps:
+      - uses: actions/checkout@v4
       - name: Run pylint
         run: |
           pip install pylint
           pylint --fail-under=7.0 $(git ls-files '*.py') || true
 
-        # run sonarqube
-      - name: Run sonarqube
+  sonar:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run SonarQube
         uses: sonarsource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -48,37 +66,45 @@ jobs:
             -Dsonar.projectKey=Gaurav906-star_ebook-store
             -Dsonar.organization=gaurav906-star
 
-        # generate build
-      - name: Genetare zip files
-        run: |
-          zip -r ebook-app.zip . -x "*.git*" "venv"
+  build:
+    runs-on: ubuntu-latest
+    needs: sonar
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate ZIP build
+        run: zip -r ebook-app.zip . -x "*.git*" "venv"
 
-        # upload build to s3 bucket
-      - name: Upload to s3 bucket
+  upload:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload build to S3
         run: |
           aws s3 cp ebook-app.zip s3://ebook-build-bucket-01dec/ebook-app.zip --region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
-        # deploy to Elastic Bean Stalk new build
-
-      - name: Deploy to EBS
+  deploy:
+    runs-on: ubuntu-latest
+    needs: upload
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk create-application-version \
-           --application-name "ebook-store" \
-           --version-label "deploy-${{ github.run_number }}" \
-           --source-bundle S3Bucket="ebook-build-bucket-01dec",S3Key="ebook-app.zip" \
-           --region us-east-1
+            --application-name "ebook-store" \
+            --version-label "deploy-${{ github.run_number }}" \
+            --source-bundle S3Bucket="ebook-build-bucket-01dec",S3Key="ebook-app.zip" \
+            --region us-east-1
 
           aws elasticbeanstalk update-environment \
-           --environment-name "Ebook-store-prod-env-new" \
-           --version-label "deploy-${{ github.run_number }}" \
-           --region us-east-1
+            --environment-name "Ebook-store-prod-env-new" \
+            --version-label "deploy-${{ github.run_number }}" \
+            --region us-east-1
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
