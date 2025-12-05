@@ -74,7 +74,7 @@ jobs:
            --region us-east-1
 
           aws elasticbeanstalk update-environment \
-           --environment-name "Ebook-store-prod-env-1" \
+           --environment-name "Ebook-store-prod-env-new" \
            --version-label "deploy-${{ github.run_number }}" \
            --region us-east-1
         env:
