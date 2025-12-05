@@ -88,10 +88,10 @@ DATABASES = {
     # }
         'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'instance_db'),
-        'USER': os.environ.get('DB_USER', 'admin_user'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'adminpass'),
-        'HOST': os.environ.get('DB_HOST', '172.31.20.103'), # Should be Private IP
+        'NAME': os.environ.get('DB_NAME', 'ebookdb'),
+        'USER': os.environ.get('DB_USER', 'ebookuser'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'test@123'),
+        'HOST': os.environ.get('DB_HOST', '3.227.16.124'), 
         'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
@@ -143,5 +143,5 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, 'static'),
 ]
