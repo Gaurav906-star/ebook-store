@@ -3,11 +3,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
 from .forms.CustomLoginForm import CustomLoginForm
 from .forms.SignUpForm import SignUpForm
 from .models import Category,Book,CartItem,Order,OrderItem,Address
 from .forms.AddressForm import AddressForm
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
 
 
 def login_view(request):
@@ -235,21 +237,52 @@ def order_detail(request, order_id):
     return render(request, "ebookapp/order_detail.html", {"order": order})
 
 
+
 @login_required
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    template_path = 'ebookapp/invoice.html'
-    context = {'order': order}
 
+    # PDF response
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="invoice_{order.id}.pdf"'
 
-    template = get_template(template_path)
-    html = template.render(context)
-    
-    pisa_status = pisa.CreatePDF(html, dest=response)
-    if pisa_status.err:
-        return HttpResponse("Error generating PDF", status=500)
+    # Create PDF canvas
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+
+    # Header
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(30 * mm, 270 * mm, "Invoice")
+
+    # Order info
+    p.setFont("Helvetica", 12)
+    p.drawString(30 * mm, 260 * mm, f"Order ID: {order.id}")
+    p.drawString(30 * mm, 250 * mm, f"Customer: {order.user.get_full_name()}")
+    p.drawString(30 * mm, 240 * mm, f"Email: {order.user.email}")
+    p.drawString(30 * mm, 230 * mm, f"Date: {order.created_at.strftime('%Y-%m-%d')}")
+
+    # Table header
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(30 * mm, 210 * mm, "Item")
+    p.drawString(120 * mm, 210 * mm, "Price")
+
+    y = 200 * mm
+
+    # Order items
+    p.setFont("Helvetica", 12)
+    for item in order.items.all():
+        p.drawString(30 * mm, y, item.book.title)
+        p.drawString(120 * mm, y, f"${item.price}")
+        y -= 10 * mm
+
+    # Total
+    p.setFont("Helvetica-Bold", 13)
+    p.drawString(30 * mm, y - 10 * mm, f"Total: ${order.total_amount}")
+
+    # Finish PDF
+    p.showPage()
+    p.save()
+
     return response
 
 

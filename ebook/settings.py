@@ -78,13 +78,21 @@ WSGI_APPLICATION = 'ebook.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'ebookdb',
+    #     'USER': 'ebookuser',
+    #     'PASSWORD': 'test@123',
+    #     'HOST': '98.92.45.24',
+    #     'PORT': '3306'
+    # }
+        'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ebookdb',
-        'USER': 'ebookuser',
-        'PASSWORD': 'test@123',
-        'HOST': '13.218.119.199',
-        'PORT': '3306'
+        'NAME': os.environ.get('DB_NAME', 'instance_db'),
+        'USER': os.environ.get('DB_USER', 'admin_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'adminpass'),
+        'HOST': os.environ.get('DB_HOST', '172.31.20.103'), # Should be Private IP
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
 }
 
@@ -124,6 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
