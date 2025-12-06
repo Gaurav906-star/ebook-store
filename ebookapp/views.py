@@ -177,20 +177,28 @@ def checkout_view(request):
             })
 
         selected_address = Address.objects.get(id=address_id, user=request.user) # pylint: disable=no-membe
-
+       
+        # Order creation
         order = Order.objects.create( # pylint: disable=no-membe
             user=request.user,
             total_amount=total,
             address=selected_address
         )
-
+        
         for item in cart_items:
+            # Save the ordered item
             OrderItem.objects.create( # pylint: disable=no-membe
                 order=order,
                 book=item.book,
                 quantity=item.quantity,
                 price=item.book.price
             )
+            # update the book stock
+            book = item.book
+            book.stock -= item.quantity
+            book.save() # this will trigger the signal to dynamodb db stock update
+            
+            
 
         cart_items.delete()
 

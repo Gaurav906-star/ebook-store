@@ -34,6 +34,12 @@
     {% endif %} {% endcomment %}
     <h3>{{ b.title }}</h3>
     <p>By {{ b.author }}</p>
+    {% if b.stock > 0 %}
+      <p style="color: green; font-weight: bold;">In stock: {{ b.stock }}</p>
+    {% else %}
+      <p style="color: red; font-weight: bold;">Out of Stock</p>
+    {% endif %}
+
     <p><strong>€{{ b.price }}</strong></p>
 
     {% if user.is_authenticated %}
