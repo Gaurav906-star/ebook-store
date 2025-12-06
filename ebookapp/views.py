@@ -11,6 +11,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from django.contrib import messages
+from .service import check_quantity_in_stock
 
 
 def login_view(request):
@@ -146,7 +147,22 @@ def checkout_view(request):
 
     if not addresses.exists():
         return redirect("add_address")
-
+        
+    for item in cart_items:
+        print('calling quantity validator')
+        result = check_quantity_in_stock(item.book.id,item.quantity)
+        
+        if result.get("error"):
+             messages.error(request, f"stock validation failed {result['error']}")
+             return redirect("cart")
+            #  check if item is available or not
+        is_available = result.get('available',False)
+        
+        if not is_available:
+            messages.error(request, f"Not enough stock for {item.book.title}, please update in cart (either decrease the item quanity or remove the item)")
+            return redirect("cart")
+        
+        
     total = sum(item.book.price * item.quantity for item in cart_items)
 
     if request.method == "POST":
