@@ -9,3 +9,8 @@ class CustomLoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username','email','password','confirm password']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.order_fields(['username', 'email', 'password'])

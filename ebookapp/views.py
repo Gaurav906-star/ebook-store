@@ -10,23 +10,29 @@ from .forms.AddressForm import AddressForm
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
+from django.contrib import messages
 
 
 def login_view(request):
-  if request.method == 'POST':
-    form = CustomLoginForm(request, data = request.POST)
-    if form.is_valid():
-       username = form.cleaned_data.get('username')
-       password = form.cleaned_data.get('password')
-       user = authenticate(request, username= username,password = password)
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
 
-       if user is not None:
-         login(request, user)
-         return redirect('home')
-  else:
-    form = CustomLoginForm()
-  
-  return render(request,'registration/login.html',{"form":form})
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'registration/login.html', {"form": form})
 
 
 
