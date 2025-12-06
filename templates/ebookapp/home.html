@@ -29,9 +29,9 @@
 <div class="books">
   {% for b in latest_books %}
   <div class="card">
-    {% if b.cover_image %}
+    {% comment %} {% if b.cover_image %}
     <img src="{{ b.cover_image.url }}" alt="{{ b.title }}" />
-    {% endif %}
+    {% endif %} {% endcomment %}
     <h3>{{ b.title }}</h3>
     <p>By {{ b.author }}</p>
     <p><strong>€{{ b.price }}</strong></p>
