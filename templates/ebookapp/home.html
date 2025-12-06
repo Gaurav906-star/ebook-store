@@ -4,7 +4,63 @@
 
 {% block content %}
 
-<!-- Hero Banner -->
+<style>
+  .desc-btn {
+    background: #6c5ce7;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .desc-btn:hover {
+    background: #a29bfe;
+  }
+
+  .description-box {
+    display: none;
+    background: #f1f2f6;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    animation: fadeSlide 0.3s ease-in-out;
+  }
+
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .books .card {
+    position: relative;
+  }
+</style>
+
+<script>
+  function toggleDescription(id) {
+    var box = document.getElementById("desc-" + id);
+    var btn = document.getElementById("btn-" + id);
+
+    if (box.style.display === "none" || box.style.display === "") {
+      box.style.display = "block";
+      btn.innerText = "Hide Description";
+    } else {
+      box.style.display = "none";
+      btn.innerText = "Show Description";
+    }
+  }
+</script>
+
+<!-- Hero -->
 <div class="hero">
   <h1>Welcome to the Ebook Store</h1>
   <p>Discover thousands of books across all categories.</p>
@@ -29,29 +85,31 @@
 <div class="books">
   {% for b in latest_books %}
   <div class="card">
-    {% comment %} {% if b.cover_image %}
-    <img src="{{ b.cover_image.url }}" alt="{{ b.title }}" />
-    {% endif %} {% endcomment %}
     <h3>{{ b.title }}</h3>
     <p>By {{ b.author }}</p>
+
     {% if b.stock > 0 %}
-      <p style="color: green; font-weight: bold;">In stock: {{ b.stock }}</p>
+    <p style="color: green; font-weight: bold;">In stock: {{ b.stock }}</p>
     {% else %}
-      <p style="color: red; font-weight: bold;">Out of Stock</p>
+    <p style="color: red; font-weight: bold;">Out of Stock</p>
     {% endif %}
 
     <p><strong>€{{ b.price }}</strong></p>
 
+    <!-- Toggle Button -->
+    <button onclick="toggleDescription('{{ b.id }}')" id="btn-{{ b.id }}" class="desc-btn">
+      Show Description
+    </button>
+
+    <!-- Description Box -->
+    <div id="desc-{{ b.id }}" class="description-box">
+      <p>{{ b.description }}</p>
+    </div>
+
     {% if user.is_authenticated %}
     <form method="POST" action="{% url 'add_to_cart' b.id %}">
       {% csrf_token %}
-      <input
-        type="number"
-        name="quantity"
-        value="1"
-        min="1"
-        style="width: 60px; margin-bottom: 10px"
-      />
+      <input type="number" name="quantity" value="1" min="1" style="width: 60px; margin-top: 8px;" />
       <button
         type="submit"
         style="
@@ -61,6 +119,7 @@
           border: none;
           border-radius: 6px;
           cursor: pointer;
+          margin-top: 5px;
         "
       >
         Add to Cart
@@ -76,6 +135,7 @@
         border-radius: 6px;
         text-decoration: none;
         display: inline-block;
+        margin-top: 5px;
       "
     >
       Login to Add
