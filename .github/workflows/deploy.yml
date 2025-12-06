@@ -57,10 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run SonarQube
-        uses: sonarsource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_SCANNER_OPTS: "-Dsonar.scanner.forceJreProvisioning=false"
         with:
           args: >
             -Dsonar.projectKey=Gaurav906-star_ebook-store
