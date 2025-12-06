@@ -21,6 +21,15 @@
     </thead>
 
     <tbody>
+    {% if messages %}
+  <div style="background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+    {% for message in messages %}
+      <p style="color: red; font-weight: bold;">{{ message }}</p>
+    {% endfor %}
+  </div>
+{% endif %}  
+      
+      
       {% for item in cart_items %}
       <tr>
         <td>{{ item.book.title }}</td>
