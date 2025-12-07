@@ -30,10 +30,7 @@ else:
     SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if "pytest" in sys.modules or "test" in sys.argv:
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = os.environ.get("DJANGO_DEBUG", "False").lower() == "true"
 
 if "pytest" in sys.modules or "test" in sys.argv:
     UNIT_TESTING = True
