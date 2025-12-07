@@ -24,10 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if "pytest" in sys.modules or "test" in sys.argv:
+    SECRET_KEY = "test-secret-key"
+else:
+    SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+if "pytest" in sys.modules or "test" in sys.argv:
+    DEBUG = True
+else:
+    DEBUG = False
+
+if "pytest" in sys.modules or "test" in sys.argv:
+    UNIT_TESTING = True
+else:
+    UNIT_TESTING = False
 
 ALLOWED_HOSTS = ["ebook-store-prod-env-new.eba-3bwk7nv6.us-east-1.elasticbeanstalk.com"]
 
