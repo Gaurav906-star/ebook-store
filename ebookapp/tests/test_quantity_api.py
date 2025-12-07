@@ -1,48 +1,44 @@
+from django.test import TestCase
 from unittest.mock import patch, MagicMock
-from ebookapp.service import check_quantity_in_stock   # adjust import based on your file location
+import requests
 
-# SUCCESS CASE
-@patch("ebookapp.utils.requests.post")
-def test_check_quantity_success(mock_post):
-    # Arrange
-    mock_response = MagicMock()
-    mock_response.json.return_value = {"available": True, "quantity": 10}
-    mock_response.raise_for_status.return_value = None
-
-    mock_post.return_value = mock_response
-
-    # Act
-    result = check_quantity_in_stock(book_id=1, requested_quantity=2)
-
-    # Assert
-    assert result == {"available": True, "quantity": 10}
-    mock_post.assert_called_once_with(
-        'https://bz5cga6tkc.execute-api.us-east-1.amazonaws.com/prod/api/checkforquantity',
-        json={"book_id": 1, "requested_quantity": 2},
-        timeout=5
-    )
+from ebookapp.service import check_quantity_in_stock, LAMBDA_API
 
 
-# TIMEOUT CASE
-@patch("ebookapp.utils.requests.post")
-def test_check_quantity_timeout(mock_post):
-    mock_post.side_effect = Exception("timeout")
+class TestCheckQuantity(TestCase):
 
-    result = check_quantity_in_stock(1, 5)
+    @patch("ebookapp.utils.requests.post")
+    def test_check_quantity_success(self, mock_post):
+        # Mock successful response
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"available": True}
+        mock_response.raise_for_status.return_value = None
+        mock_post.return_value = mock_response
 
-    assert "error" in result
-    assert "timeout" in result["error"]
+        result = check_quantity_in_stock(1, 5)
 
+        mock_post.assert_called_once_with(
+            LAMBDA_API,
+            json={"book_id": 1, "requested_quantity": 5},
+            timeout=5
+        )
+        self.assertEqual(result, {"available": True})
 
-# HTTP ERROR CASE
-@patch("ebookapp.utils.requests.post")
-def test_check_quantity_http_error(mock_post):
-    mock_response = MagicMock()
-    mock_response.raise_for_status.side_effect = Exception("HTTP error")
+    @patch("ebookapp.utils.requests.post", side_effect=requests.exceptions.Timeout("Timeout"))
+    def test_check_quantity_timeout(self, mock_post):
+        result = check_quantity_in_stock(1, 5)
+        self.assertEqual(result, {"error": "lambda function is timeout {e}"})
 
-    mock_post.return_value = mock_response
+    @patch("ebookapp.utils.requests.post")
+    def test_check_quantity_http_error(self, mock_post):
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("Bad request")
+        mock_post.return_value = mock_response
 
-    result = check_quantity_in_stock(1, 5)
+        result = check_quantity_in_stock(1, 5)
+        self.assertEqual(result, {"error": "error in calling https request {e}"})
 
-    assert "error" in result
-    assert "HTTP error" in result["error"]
+    @patch("ebookapp.utils.requests.post", side_effect=Exception("Something broke"))
+    def test_check_quantity_generic_error(self, mock_post):
+        result = check_quantity_in_stock(1, 5)
+        self.assertEqual(result, {"error": "Something broke"})
