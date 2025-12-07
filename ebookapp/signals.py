@@ -17,7 +17,7 @@ def sync_book_stock_to_dynamodb(sender, instance, **kwargs):
   will sync the dynamodb on save operation
   """
     # Skip AWS calls during tests
-  if settings.DEBUG or os.environ.get("PYTEST_CURRENT_TEST"):
+  if settings.UNIT_TESTING:
       return
   dynamodb = boto3.resource('dynamodb')
   book_table = dynamodb.Table('Books_Stock')
@@ -38,8 +38,9 @@ def delete_books_stock_from_dynamodb(sender,instance,**kwargs):
   function will recieve the delete signal on any book entry delete
   will remove the stock entry from dynamodb
   """
-  if settings.DEBUG or os.environ.get("PYTEST_CURRENT_TEST"):
-    return
+  if settings.UNIT_TESTING:
+      return
+
   dynamodb = boto3.resource('dynamodb')
   book_table = dynamodb.Table('Books_Stock')
   book_table.delete_item(
