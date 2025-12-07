@@ -1,6 +1,10 @@
 from django.urls import path
 from .views import login_view, logout_view,signup_view,home_view,add_to_cart,cart_view,checkout_view, update_cart_item,remove_cart_item,checkout_success_view,address_list,add_address,edit_address,delete_address,order_detail,download_invoice,my_orders_view,book_list_view
 
+"""
+All the URL used in Ebook application like login, logout etc
+"""
+
 urlpatterns = [
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),

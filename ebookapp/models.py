@@ -2,10 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Category(models.Model):
+    """
+    Every book belongs to Category 
+    Category have name and slug
+    """
     name = models.CharField(max_length=50)
     slug = models.SlugField(unique=True)
 
     class Meta:
+        """
+        to achieve reordering as per name
+        plural form is categories
+        """
         ordering = ["name"]
         verbose_name_plural = "Categories"
     
@@ -14,6 +22,10 @@ class Category(models.Model):
 
 
 class Book(models.Model):
+    """
+    Core model of application with all the params
+
+    """
     title = models.CharField(max_length=20)
     author = models.CharField(max_length=20)
     description = models.TextField()
@@ -26,13 +38,22 @@ class Book(models.Model):
 
 
     class Meta:
+        """
+        ordering through title
+        """
         ordering = ["title"]
 
     def __str__(self):
+        """
+        to get title on dashboard
+        """
         return f"{self.title} by {self.author}"
 
 
 class CartItem(models.Model):
+    """
+    To manage the cart item which acts as a bridge between user and books
+    """
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     book = models.ForeignKey(Book,on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(default=1)
@@ -41,6 +62,9 @@ class CartItem(models.Model):
         unique_together = ["user","book"]
     
     def total_price(self):
+     """
+     This function will help to get total price as per quantity of a item
+     """
      return self.book.price * self.quantity  # pylint: disable=no-member
     
     def __str__(self):
@@ -49,6 +73,9 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    """
+    To track users order 
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     address = models.ForeignKey("Address", on_delete=models.SET_NULL, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -69,6 +96,9 @@ class Order(models.Model):
     
 
 class OrderItem(models.Model):
+    """
+    To track all items in a order
+    """
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
@@ -79,6 +109,9 @@ class OrderItem(models.Model):
     
 
 class Address(models.Model):
+    """
+    To manage address for user
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
     full_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
