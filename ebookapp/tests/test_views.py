@@ -63,36 +63,25 @@ class AuthViewsTests(BaseViewTestCase):
     def test_login_view_post_success(self):
         url = reverse("login")
 
-        # Ensure user exists & credentials match
-        self.assertTrue(self.client.login(username=self.user.username, password=self.password))
-
         response = self.client.post(
             url,
-            {"username": self.user.username, "password": self.password},
+            {"username": self.user.username, "password": self.password, "email": self.user.email},
             follow=False,
         )
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("home"))
+
+
+    def test_login_view_post_invalid(self):
         url = reverse("login")
         response = self.client.post(
             url,
-            {"username": self.user.username, "password": self.password},
+            {"username": "wrong", "password": "wrong","email":"wrong@gmail.com"},
             follow=False,
         )
-            # On success it should redirect to 'home'
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("home"))
-
-        def test_login_view_post_invalid(self):
-            url = reverse("login")
-            response = self.client.post(
-                url,
-                {"username": "wrong", "password": "wrong"},
-                follow=False,
-            )
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, "registration/login.html")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/login.html")
 
     def test_signup_view_get(self):
         url = reverse("signup")
@@ -102,7 +91,6 @@ class AuthViewsTests(BaseViewTestCase):
 
     def test_signup_view_post_valid(self):
         url = reverse("signup")
-        # Assuming SignUpForm is similar to UserCreationForm
         response = self.client.post(
             url,
             {
@@ -113,7 +101,6 @@ class AuthViewsTests(BaseViewTestCase):
             },
             follow=False,
         )
-        # On success it redirects to home
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("home"))
         self.assertTrue(User.objects.filter(username="newuser").exists())
@@ -137,7 +124,6 @@ class AuthViewsTests(BaseViewTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("home"))
-
 
 class HomeAndBookViewsTests(BaseViewTestCase):
     def test_home_view(self):
