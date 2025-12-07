@@ -18,6 +18,7 @@ def login_view(request):
     Handle user login by validating form data and authenticating credentials.
     Redirects authenticated users to home page or re-renders login form on failure.
     """
+
     if request.method == 'POST':
         form = CustomLoginForm(request, data=request.POST)
 
@@ -187,7 +188,7 @@ def checkout_view(request):
         address_id = request.POST.get("selected_address")
 
         if not address_id:
-            return render(request, "checkout/checkout.html", {
+            return render(request, "ebookapp/checkout.html", {
                 "error": "Please select a delivery address.",
                 "addresses": addresses,
                 "cart_items": cart_items,

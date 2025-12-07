@@ -62,24 +62,37 @@ class AuthViewsTests(BaseViewTestCase):
 
     def test_login_view_post_success(self):
         url = reverse("login")
+
+        # Ensure user exists & credentials match
+        self.assertTrue(self.client.login(username=self.user.username, password=self.password))
+
         response = self.client.post(
             url,
             {"username": self.user.username, "password": self.password},
             follow=False,
         )
-        # On success it should redirect to 'home'
+
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("home"))
-
-    def test_login_view_post_invalid(self):
         url = reverse("login")
         response = self.client.post(
             url,
-            {"username": "wrong", "password": "wrong"},
+            {"username": self.user.username, "password": self.password},
             follow=False,
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "registration/login.html")
+            # On success it should redirect to 'home'
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home"))
+
+        def test_login_view_post_invalid(self):
+            url = reverse("login")
+            response = self.client.post(
+                url,
+                {"username": "wrong", "password": "wrong"},
+                follow=False,
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, "registration/login.html")
 
     def test_signup_view_get(self):
         url = reverse("signup")
