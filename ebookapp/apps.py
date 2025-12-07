@@ -7,6 +7,6 @@ class EbookappConfig(AppConfig):
     
     
     def ready(self):
-        import ebookapp.signals
+        import ebookapp.signals  # pylint: disable=unused-import
 
 

@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.contrib.auth.models import User
 
-
+# pylint: disable=too-few-public-methods
 class SignUpForm(UserCreationForm):
   email = forms.EmailField(required=True)
 
@@ -16,3 +16,4 @@ class SignUpForm(UserCreationForm):
       if User.objects.filter(email=email).exists():
           raise forms.ValidationError("Email already exists")
       return email
+  

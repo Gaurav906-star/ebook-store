@@ -1,6 +1,7 @@
 from django import forms
 from ebookapp.models import Address
 
+# pylint: disable=too-few-public-methods
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
