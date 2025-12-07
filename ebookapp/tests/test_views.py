@@ -27,7 +27,8 @@ class ViewTests(TestCase):
     def test_login_post_success(self):
         response = self.client.post(reverse("login"), {
             "username": "testuser",
-            "password": "password123"
+            "password": "password123",
+            "email": "testuser@example.com"
         })
         self.assertEqual(response.status_code, 302)
 
@@ -112,5 +113,5 @@ class ViewTests(TestCase):
 
     # ---------- BOOK LIST ----------
     def test_book_list_view(self):
-        response = self.client.get(reverse("book_list"))
+        response = self.client.get(reverse("booklist"))
         self.assertEqual(response.status_code, 200)
