@@ -96,8 +96,9 @@ jobs:
           args: >
             -Dsonar.projectKey=Gaurav906-star_ebook-store
             -Dsonar.organization=gaurav906-star
-            -Dsonar.sources=.
-            -Dsonar.tests=.
+            -Dsonar.sources=ebookapp,manage.py
+            -Dsonar.tests=tests
+            -Dsonar.exclusions=**/migrations/**
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
   build:
