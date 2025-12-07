@@ -22,4 +22,4 @@ def check_quantity_in_stock(book_id,requested_quantity):
       return {"error":"error in calling https request {e}"}
   except Exception as e :
       return {"error":str(e)}
-    
+
