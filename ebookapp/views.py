@@ -1,17 +1,17 @@
-from django.shortcuts import render,redirect,get_object_or_404
+from django.http import HttpResponse
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import get_template
-from .forms.CustomLoginForm import CustomLoginForm
-from .forms.SignUpForm import SignUpForm
-from .models import Category,Book,CartItem,Order,OrderItem,Address
-from .forms.AddressForm import AddressForm
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
-from django.contrib import messages
-from .service import check_quantity_in_stock
+from reportlab.pdfgen import canvas
+from .forms.AddressForm import AddressForm
+from .forms.CustomLoginForm import CustomLoginForm
+from .forms.SignUpForm import SignUpForm
+from .models import Address, Book, CartItem, Category, Order, OrderItem
+
 
 
 def login_view(request):
@@ -139,30 +139,15 @@ def checkout_success_view(request, order_id):
 
 @login_required
 def checkout_view(request):
-    cart_items = CartItem.objects.filter(user=request.user) # pylint: disable=no-membe
-    addresses = Address.objects.filter(user=request.user) # pylint: disable=no-membe
+    cart_items = CartItem.objects.filter(user=request.user) # pylint: disable=no-member
+    addresses = Address.objects.filter(user=request.user) # pylint: disable=no-member
 
     if not cart_items.exists():
         return redirect("cart")
 
     if not addresses.exists():
         return redirect("add_address")
-        
-    for item in cart_items:
-        print('calling quantity validator')
-        result = check_quantity_in_stock(item.book.id,item.quantity)
-        
-        if result.get("error"):
-             messages.error(request, f"stock validation failed {result['error']}")
-             return redirect("cart")
-            #  check if item is available or not
-        is_available = result.get('available',False)
-        
-        if not is_available:
-            messages.error(request, f"Not enough stock for {item.book.title}, please update in cart (either decrease the item quanity or remove the item)")
-            return redirect("cart")
-        
-        
+
     total = sum(item.book.price * item.quantity for item in cart_items)
 
     if request.method == "POST":
@@ -176,29 +161,23 @@ def checkout_view(request):
                 "total": total,
             })
 
-        selected_address = Address.objects.get(id=address_id, user=request.user) # pylint: disable=no-membe
-       
+        selected_address = Address.objects.get(id=address_id, user=request.user) # pylint: disable=no-member
         # Order creation
-        order = Order.objects.create( # pylint: disable=no-membe
+        order = Order.objects.create( # pylint: disable=no-member
             user=request.user,
             total_amount=total,
             address=selected_address
         )
-        
+       # save the Order Item
         for item in cart_items:
-            # Save the ordered item
-            OrderItem.objects.create( # pylint: disable=no-membe
+            OrderItem.objects.create( # pylint: disable=no-member
                 order=order,
                 book=item.book,
                 quantity=item.quantity,
                 price=item.book.price
             )
-            # update the book stock
-            book = item.book
-            book.stock -= item.quantity
-            book.save() # this will trigger the signal to dynamodb db stock update
-            
-            
+
+        
 
         cart_items.delete()
 
@@ -213,7 +192,7 @@ def checkout_view(request):
 
 @login_required
 def my_orders_view(request):
-    orders = Order.objects.filter(user=request.user).order_by("-created_at") # pylint: disable=no-membe
+    orders = Order.objects.filter(user=request.user).order_by("-created_at") # pylint: disable=no-member
     return render(request, "ebookapp/myorder.html", {"orders": orders})
 
 
@@ -255,7 +234,7 @@ def edit_address(request, id):
 
 @login_required
 def delete_address(request, id):
-    address = Address.objects.get(id=id, user=request.user)
+    address = Address.objects.get(id=id, user=request.user) # pylint: disable=no-member
     address.delete()
     return redirect("address_list")
 
@@ -278,7 +257,6 @@ def download_invoice(request, order_id):
 
     # Create PDF canvas
     p = canvas.Canvas(response, pagesize=A4)
-    width, height = A4
 
     # Header
     p.setFont("Helvetica-Bold", 16)

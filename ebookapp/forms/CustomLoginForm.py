@@ -2,7 +2,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.contrib.auth.models import User
 
-
+# pylint: disable=too-few-public-methods
 class CustomLoginForm(AuthenticationForm):
     email = forms.EmailField(required=True)
 
@@ -14,3 +14,4 @@ class CustomLoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
 
         self.order_fields(['username', 'email', 'password'])
+        
