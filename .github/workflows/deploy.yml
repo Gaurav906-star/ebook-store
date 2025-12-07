@@ -41,13 +41,10 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
+          pip install pytest pytest-django pytest-cov
 
       - name: Run tests with coverage
         run: |
-          pip install pytest pytest-django pytest-cov
           pytest --cov=ebookapp --cov-report=xml
 
       - name: Upload coverage report
@@ -76,15 +73,19 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
+
       - name: Download coverage report
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-      - name: Run SonarQube
+
+      - name: Move coverage file to workspace root
+        run: mv coverage.xml ../coverage.xml || mv coverage.xml coverage.xml || true
+
+      - name: Run SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_SCANNER_OPTS: "-Dsonar.scanner.forceJreProvisioning=false"
         with:
           args: >
             -Dsonar.projectKey=Gaurav906-star_ebook-store
