@@ -23,12 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-4**qp1&l%tgi+3)54j(me!m!vg@z9@01t(qq2+knqpc7)i!dfv'
+# SECRET_KEY = 'django-insecure-4**qp1&l%tgi+3)54j(me!m!vg@z9@01t(qq2+knqpc7)i!dfv'
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["ebook-store-prod-env-new.eba-3bwk7nv6.us-east-1.elasticbeanstalk.com"]
 
 
 # Application  definition
@@ -79,11 +80,11 @@ WSGI_APPLICATION = 'ebook.wsgi.application'
 DATABASES = {
         'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'ebookdb'),
-        'USER': os.environ.get('DB_USER', 'ebookuser'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'test@123'),
-        'HOST': os.environ.get('DB_HOST', '52.201.221.206'), 
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'), 
+        'PORT': os.environ.get('DB_PORT'),
     }
 
     #  'default': {
