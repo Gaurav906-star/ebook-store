@@ -46,6 +46,11 @@ jobs:
     needs: run-tests
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies for lint
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Run pylint
         run: |
           pip install pylint
