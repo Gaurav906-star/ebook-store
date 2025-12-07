@@ -85,8 +85,8 @@ jobs:
         with:
           name: coverage-report
 
-      - name: Move coverage file to workspace root
-        run: mv coverage-report/coverage.xml coverage.xml
+      - name: Verify coverage file exists
+        run: ls -l coverage.xml
 
       - name: Run SonarQube
         uses: SonarSource/sonarcloud-github-action@v2
