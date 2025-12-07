@@ -38,10 +38,22 @@ jobs:
     needs: install-dependencies
     steps:
       - uses: actions/checkout@v4
-      - name: Run tests
+
+      - name: Install test dependencies
         run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
           pip install pytest pytest-cov
+
+      - name: Run tests with coverage
+        run: |
           pytest --cov=ebookapp --cov-report=xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
 
   lint:
     runs-on: ubuntu-latest
@@ -63,6 +75,10 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
       - name: Run SonarQube
         uses: SonarSource/sonarcloud-github-action@v2
         env:
