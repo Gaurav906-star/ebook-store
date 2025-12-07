@@ -36,6 +36,8 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     needs: install-dependencies
+    env:
+      DJANGO_SECRET_KEY: "test-secret-key-123"
     steps:
       - uses: actions/checkout@v4
 
