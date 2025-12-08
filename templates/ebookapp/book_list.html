@@ -1,9 +1,5 @@
-{% extends "ebookapp/base.html" %}
-{% load static %}
-
-{% block title %}Books | Ebook Store{% endblock %}
-
-{% block content %}
+{% extends "ebookapp/base.html" %} {% load static %} {% block title %}Books |
+Ebook Store{% endblock %} {% block content %}
 
 <div class="container">
   <h2>Available Books</h2>
@@ -12,12 +8,11 @@
   <div class="books-grid">
     {% for book in books %}
     <div class="book-card">
-      
-      {% if book.cover_image %}
+      {% comment %} {% if book.cover_image %}
       <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" />
       {% else %}
       <img src="{% static 'default_book_cover.png' %}" alt="No Image" />
-      {% endif %}
+      {% endif %} {% endcomment %}
 
       <div class="book-title">{{ book.title }}</div>
       <div class="book-author">By {{ book.author }}</div>
