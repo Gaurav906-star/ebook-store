@@ -1,5 +1,5 @@
-{% extends "ebookapp/base.html" %} {% block title %}Ebook Store | Home
-{%endblock %} {% block content %}
+{% extends "ebookapp/base.html" %} {% block title %}Ebook Store | Home 
+{% endblock %} {% block content %}
 
 <style>
   .desc-btn {
@@ -110,28 +110,29 @@
     {% if user.is_authenticated %}
     <form method="POST" action="{% url 'add_to_cart' b.id %}">
       {% csrf_token %}
-      <input
-        type="number"
-        name="quantity"
-        value="1"
-        min="1"
-        style="width: 60px; margin-top: 8px"
-      />
+
       {% if b.stock > 0 %}
-      <button
-        type="submit"
-        style="
-          padding: 8px 12px;
-          background: #0984e3;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          margin-top: 5px;
-        "
-      >
-        Add to Cart
-      </button>
+        <input
+          type="number"
+          name="quantity"
+          value="1"
+          min="1"
+          style="width: 60px; margin-top: 8px"
+        />
+        <button
+          type="submit"
+          style="
+            padding: 8px 12px;
+            background: #0984e3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 5px;
+          "
+        >
+          Add to Cart
+        </button>
       {% endif %}
     </form>
     {% else %}
