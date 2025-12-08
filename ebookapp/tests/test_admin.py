@@ -14,6 +14,7 @@ class AdminConfigTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.site = admin.AdminSite()
+      
 
         # Sample objects
         self.user = User.objects.create(username="testuser")
