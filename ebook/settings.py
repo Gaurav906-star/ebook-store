@@ -35,7 +35,7 @@ if "pytest" in sys.modules or "test" in sys.argv:
 else:
     UNIT_TESTING = False
 
-ALLOWED_HOSTS = ["ebook-store-prod-env-new.eba-3bwk7nv6.us-east-1.elasticbeanstalk.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application  definition
