@@ -72,7 +72,7 @@ jobs:
       - name: Run pylint
         run: |
           pip install pylint
-          pylint --ignore=migrations,tests --fail-under=7.0 $(git ls-files '*.py') || true
+          pylint --ignore=migrations,tests --fail-under=7.0 $(git ls-files '*.py' ':!:ebookapp/tests/*') || true
 
   sonar:
     runs-on: ubuntu-latest
