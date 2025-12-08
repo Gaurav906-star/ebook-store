@@ -18,27 +18,29 @@ def login_view(request):
     Handle user login by validating form data and authenticating credentials.
     Redirects authenticated users to home page or re-renders login form on failure.
     """
+    template = "registration/login.html"
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomLoginForm(request, data=request.POST)
 
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+
             user = authenticate(request, username=username, password=password)
 
-            if user is not None:
+            if user:
                 login(request, user)
-                return redirect('home')
-            
-            messages.error(request, "Invalid username or password.")
-            return render(request, 'registration/login.html', {"form": form})
-        
-        messages.error(request, "Invalid username or password.")
-        return render(request, 'registration/login.html', {"form": form})
-    
-    form = CustomLoginForm()
-    return render(request, 'registration/login.html', {"form": form})
+                return redirect("home")
+
+        # If authentication failed or form invalid
+        messages.error(request, "Invalid username, email, or password.")
+        return render(request, template, {"form": form})
+
+    # GET request
+    form = CustomLoginForm(request)
+    return render(request, template, {"form": form})
+
 
 
 
